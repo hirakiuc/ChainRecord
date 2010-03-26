@@ -1,0 +1,23 @@
+- ChainRecord
+
+This package provide Object-Relation Mapper(ORM) library 
+implemented by pure php script.
+
+-- huge goal
+
+ - More effective with less code lines.
+
+--- goal
+ 
+ - Implement an ActiveRecord pattern ORM with pure php.  
+ - Blend ActiveRecord into MethodChain code style.
+   - to make this library like the jquery (javascript library).
+
+
+
+ - 動的プロパティの実装
+ - chainableライブラリの利用
+ - document整備(英語で)
+ - pear package(pyrusは後回し)の作成
+ - package登録
+
