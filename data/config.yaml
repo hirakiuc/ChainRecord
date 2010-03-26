@@ -1,0 +1,19 @@
+# config.yaml
+
+databases:
+  default: testdb1
+
+  testdb1:
+    adapter: postgresql
+    host:    localhost
+    port:    5432
+    dbname:  chainrecord_dev
+    user:    tester
+    password:tester
+
+  testdb2:
+    adapter: mysql
+    host:    localhost
+    port:    3306
+    dbname:  chainrecord_dev
+
