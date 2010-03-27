@@ -20,10 +20,12 @@ class MethodInvoker{
                 array($this,$name), $parameters);
         array_push($results, $ret);
       } 
+
+      return $results;
     }else{
       $msg = "Undefined Method Called:";
       $msg.= "(class:".get_class($this).", method:".$name.")";
-      throw new CRException($msg);
+      throw new Exception($msg);
     }
   }
 
