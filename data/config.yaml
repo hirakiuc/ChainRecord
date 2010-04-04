@@ -16,4 +16,6 @@ databases:
     host:    localhost
     port:    3306
     dbname:  chainrecord_dev
+    user:    tester
+    password:tester
 
