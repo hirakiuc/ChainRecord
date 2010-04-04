@@ -77,7 +77,7 @@ class ChainTube implements ArrayAccess, Iterator, Countable {
             call_user_func_array(
                 array($ary['obj'], $ary['method']), 
                 $ary['params']
-            )
+            );
         }
     }
 
@@ -100,7 +100,7 @@ class ChainTube implements ArrayAccess, Iterator, Countable {
         return count($this->list);
     }
 
-    public function empty(){
+    public function is_empty(){
         return empty($this->list);
     }
 
@@ -118,7 +118,7 @@ class ChainTube implements ArrayAccess, Iterator, Countable {
         $v = $this->list[0];
 
         $obj = null;
-        if(is_integer($v){
+        if(is_integer($v)){
             $obj = new IntegerInvoker($this->list);
         }else if(is_float($v)){
             $obj = new FloatInvoker($this->list);
@@ -129,21 +129,17 @@ class ChainTube implements ArrayAccess, Iterator, Countable {
         }else if(is_array($v)){
             $obj = new ArrayInvoker($this->list);
         }else if(is_object($v)){
-            if(is_subclass_of($v, "ChainRecord"){
-                $obj = new ChainRecordInvoker($this->list);
-            }
+            $obj = new ObjectInvoker($this->list);
         }
-    }
 
-    if(is_null($obj)){
-        $msg = "Unsupported Chain ValueType";
-        throw new NotSupportError($msg); 
-    }
+        if(is_null($obj)){
+            $msg = "Unsupported Chain ValueType";
+            throw new NotSupportError($msg); 
+        }
 
-    $this->list = $obj->invoke($name, $parameters);
-    return $this;
-  }
-
+        $this->list = $obj->invoke($name, $parameters);
+        return $this;
+    } 
 }
 
 
