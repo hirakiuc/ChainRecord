@@ -5,7 +5,7 @@ require_once "config.php";
 class PdoPool{
 
     /** */
-    private $instance = null;
+    private static $instance = null;
 
     /** */
     private $config = null;
@@ -54,11 +54,10 @@ class PdoPool{
         $pdo_info = $this->pool[$key];
 
         return array(
-            "key"   : $key,
-            "pdo"   : $this->pdo_info["pdo"],
-            "config": $this->pdo_info["config"]
-        );
-
+            "key"   => $key,
+            "pdo"   => $pdo_info["pdo"],
+            "config"=> $pdo_info["config"]
+        ); 
     }
 
     private function createPdo($key, $config){
@@ -90,8 +89,10 @@ class PdoPool{
             );
         }
 
-        $this->pool[$key] = array("pdo":$pdo, "config":$db_config);
-
+        $this->pool[$key] = array(
+            "pdo"    => $pdo, 
+            "config" => $db_config
+        ); 
     }
 
     /**
@@ -102,9 +103,9 @@ class PdoPool{
         // TODO support unix socket
 
         $ary = array();
-        array_push("host=".$config["host"]);
-        array_push("port=".$config["port"]);
-        array_push("dbname=".$config["dbname"]);
+        array_push($ary, "host=".$config["host"]);
+        array_push($ary, "port=".$config["port"]);
+        array_push($ary, "dbname=".$config["dbname"]);
         $dsn = "mysql:".implode($ary,";");
 
         return new PDO($dsn,$config["user"],$config["password"]);
@@ -117,11 +118,11 @@ class PdoPool{
         // TODO check config
 
         $ary = array();
-        array_push("host=".$config["host"]);
-        array_push("port=".$config["port"]);
-        array_push("dbname=".$config["dbname"]);
-        array_push("user=".$config["user"]);
-        array_push("password=".$config["password"]);
+        array_push($ary, "host=".$config["host"]);
+        array_push($ary, "port=".$config["port"]);
+        array_push($ary, "dbname=".$config["dbname"]);
+        array_push($ary, "user=".$config["user"]);
+        array_push($ary, "password=".$config["password"]);
         $dsn = "pgsql:".implode($ary," ");
 
         return new PDO($dsn);
