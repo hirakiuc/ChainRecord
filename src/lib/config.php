@@ -17,7 +17,7 @@ class Config{
         try{
             // TODO check $path is valid filepath?
             $this->config = Spyc::YAMLLoad($path); 
-        }catch(Exception e){
+        }catch(Exception $e){
             throw new YamlLoadError(
                 "failed to load yaml file:".$path);
         } 
