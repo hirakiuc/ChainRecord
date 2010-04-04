@@ -2,14 +2,18 @@
 
 class CRError extends Exception{}
 
-class YamlLoadError extends CRException{}
+class YamlLoadError extends CRError{}
 
-class InvalidConfigError extends CRException{}
+class InvalidConfigError extends CRError{}
 
-class NotSupportDbError extends CRException{}
+class NotSupportDbError extends CRError{}
 
-class DBError extends CRException{}
+class DBError extends CRError{}
 
-class NotSupportError extends CRException{}
+class NotSupportError extends CRError{}
+
+class TableNotFoundError extends CRError{}
+
+class ColumnNotFoundError extends CRError{}
 
 ?>
