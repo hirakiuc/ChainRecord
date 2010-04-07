@@ -14,6 +14,6 @@ class NotSupportError extends CRError{}
 
 class TableNotFoundError extends CRError{}
 
-class ColumnNotFoundError extends CRError{}
+class NoSuchPropertyError extends CRError{}
 
 ?>
