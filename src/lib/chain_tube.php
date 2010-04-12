@@ -31,7 +31,7 @@ class ChainTube implements ArrayAccess, Iterator, Countable {
         $this->pos = 0;
     }
     function current(){
-        $this->list[$this->pos];
+        return $this->list[$this->pos];
     }
     function key(){
         return $this->pos;
