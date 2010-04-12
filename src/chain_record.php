@@ -33,7 +33,9 @@ class ChainRecord {
      *      array(
      *          "type"     : data_type_string,
      *          "nullable" : true or false,
-     *          "length"   : character_length_integer
+     *          "length"   : character_length_integer,
+     *          "default_exist" : whether_default_value_exist_or_not,
+     *          "auto_increment": whether_auto_increment_or_not
      *      ),
      *  ...
      * )
@@ -120,20 +122,28 @@ class ChainRecord {
     public function save(){ 
         $params = array();
 
-        $query = "INSERT INTO ".$this->table_name." ";
-        $query.= "(". implode($this->column_names, ",").") ";
-        $query.= "VALUES ";
 
+        $columns = array();
         $marker = array();
         foreach($this->vals as $key => $v){
+            if(array_search($key, $this->primary_key) !== false
+              && $this->props[$key]["default_exist"] === true){
+                continue;
+            }
+            array_push($columns, $key);
             array_push($params, $v["value"]); 
             array_push($marker, "?");
         }
+
+        $query = "INSERT INTO ".$this->table_name." ";
+        $query.= "(". implode($columns, ",").") ";
+        $query.= "VALUES ";
 
         $query.= "(". implode($marker, ","). ")";
 
         try{
             $stmt = $this->pdo->prepare($query);
+
             if(is_null($stmt)){
                 throw new DBError($this->get_errmsg());
             }
@@ -155,13 +165,13 @@ class ChainRecord {
      *  "limit" => number or array(limit, offset),
      * )
      */
-    public function find($ary){
+    public function find($ary = null){
         $params = array();
 
         $query = "SELECT * FROM ".$this->table_name." ";
 
         $cond = "";
-        if(isset($ary["cond"])){
+        if(!is_null($ary) && isset($ary["cond"])){
             $v = $ary["cond"];
 
             $cond.= "WHERE ".$v[0];
@@ -187,12 +197,12 @@ class ChainRecord {
             $query.= $cond;
         }
 
-        if(isset($ary["order"])){
+        if(!is_null($ary) && isset($ary["order"])){
             $query.= " ORDER BY ".$ary["order"]." ";
         }
         
-        if(isset($ary["limit"])){
-            if(is_number($ary["limit"])){
+        if(!is_null($ary) && isset($ary["limit"])){
+            if(is_numeric($ary["limit"])){
                 $query.= " LIMIT ".$ary["limit"]." ";
             }else{
                 $query.= " LIMIT " .$ary["limit"][0];
@@ -212,12 +222,13 @@ class ChainRecord {
 
             $rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-            $clazz = new ReflectionClass(get_class($this));
-
             $objs = array();
             foreach($rows as $row){
-                $v = $clazz->newInstance();
-                array_push($objs, $v->create($row));
+                $class_name = get_class($this);
+                $obj = new $class_name; 
+                $v = $obj->create($row);
+
+                array_push($objs, $v);
             }
 
             return new ChainTube($objs); 
@@ -236,11 +247,11 @@ class ChainRecord {
      *  "cond" => array("condition", array())
      * )
      */
-    public function update($ary){
+    public function update($ary = null){
         $params = array();
 
         // accord arg value priority over $this property.
-        if(isset($ary["vals"])){
+        if(!is_null($ary) && isset($ary["vals"])){
             foreach($ary["vals"] as $name => $v){ 
                 if(!$this->is_column_exist($name)){
                     $msg = $name." column is not defined.";
@@ -269,7 +280,7 @@ class ChainRecord {
         $query.= implode($columns, ",");
 
         $cond = "";
-        if(isset($ary["cond"])){
+        if(!is_null($ary) && isset($ary["cond"])){
             $v = $ary["cond"];
 
             $cond.= "WHERE ".$v[0];
@@ -316,13 +327,13 @@ class ChainRecord {
      *  "cond" => array("condition", array()),
      * )
      */
-    public function destroy($ary = array()){
+    public function destroy($ary = null){
         $params = array();
 
         $query = "DELETE FROM ". $this->table_name." ";
 
         $cond = "";
-        if(isset($ary["cond"])){
+        if(!is_null($ary) && isset($ary["cond"])){
             $v = $ary["cond"];
 
             $cond.= "WHERE ".$v[0];
@@ -408,10 +419,11 @@ class ChainRecord {
             return false;
         }
 
-        foreach($this->primary_key as $key_name){
-            $v = $this->vals[$key_name]["value"];
+        foreach($this->primary_key as $key){
+            $v = $this->vals[$key]["value"];
+
             if(is_null($v)){
-                return fasle;
+                return false;
             }
         }
 
