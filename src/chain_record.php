@@ -190,7 +190,7 @@ class ChainRecord {
             $v = $this->get_pkey_cond();
 
             $cond.= $v["cond"];
-            $params = array_merge($params, $v["params"]);
+            $params = array_merge($params, $v["params"]); 
         }
 
         if(strlen($cond) > 0){
@@ -392,9 +392,9 @@ class ChainRecord {
             $msg = $name." column is not defined.";
             throw new NoSuchPropertyError($msg);
         } 
-        $v = $this->vals[$name];
-        $v["value"] = $value;
-        $v["is_updated"] = true;
+
+        $this->vals[$name]["value"] = $value;
+        $this->vals[$name]["is_updated"] = true;
     }
 
     function __call($name, $parameters){
