@@ -266,7 +266,7 @@ class ChainRecord {
         $updated_props = array(); 
         foreach($this->vals as $key => $v){
             if($v["is_updated"]){
-                $updated_columns[$key] = $v["value"];
+                $updated_props[$key] = $v["value"];
             }
         }
 
@@ -277,7 +277,8 @@ class ChainRecord {
             array_push($columns, $name. " = ? ");
             array_push($params, $v);
         }
-        $query.= implode($columns, ",");
+
+        $query.= implode($columns, ","); 
 
         $cond = "";
         if(!is_null($ary) && isset($ary["cond"])){
@@ -397,9 +398,8 @@ class ChainRecord {
         $this->vals[$name]["is_updated"] = true;
     }
 
-    function __call($name, $parameters){
-
-    }
+//    function __call($name, $parameters){ 
+//    }
 
     protected function get_errmsg(){
         $err = $this->pdo->errorInfo();
