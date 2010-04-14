@@ -179,6 +179,197 @@ class ChainRecordCRUDTest extends PHPUnit_Framework_TestCase {
         $this->assertEquals($before_id, $after2_grps[0]->id);
     }
 
+    public function testCreate_and_Save(){
+        $obj = new Group();
+        $title = "hogehuga";
+        $memo  = "hogehuga";
+
+        $obj->create(array(
+                "title" => $title,
+                "memo"  => $memo
+            )
+        );
+        $ret = $obj->find(array(
+                "cond" => array("title = ? AND memo = ?", $title, $memo)
+            )
+        );
+        $this->assertEquals(0, count($ret));
+
+        $obj->save();
+        $ret = $obj->find(array(
+                "cond" => array("title = ? AND memo = ?", $title, $memo)
+            )
+        );
+        $this->assertEquals(1, count($ret)); 
+    }
+
+    public function testFindUpdate(){
+        $obj = new Group();
+
+        $ret = $obj->find(array(
+                "cond" => array("title = 'title8'")
+            )
+        );
+        $this->assertEquals(1, count($ret));
+        $this->assertEquals("title8", $ret[0]->title);
+
+        $new_title = "new title";
+        $ret[0]->title = $new_title;
+        $ret2 = $ret[0]->update();
+
+        $this->assertEquals(1, $ret2);
+
+        $ret2 = $ret[0]->find();
+        $this->assertEquals(1, count($ret2));
+        $this->assertEquals($new_title, $ret2[0]->title); 
+    }
+
+    public function testFindUpdate_by_argument(){
+        $obj = new Group();
+
+        $ret = $obj->find(array(
+                "cond" => array("title = 'title8'")
+            )
+        );
+        $this->assertEquals(1, count($ret));
+        $this->assertEquals("title8", $ret[0]->title);
+
+        $new_title = "new title";
+        $ret[0]->title = "old_title_hogehoge";
+        $ret2 = $ret[0]->update(array(
+                "vals" => array(
+                    "title" => $new_title
+                )
+            )
+        ); 
+        $this->assertEquals(1, $ret2);
+
+        $ret2 = $ret[0]->find();
+        $this->assertEquals(1, count($ret2));
+        $this->assertEquals($new_title, $ret2[0]->title); 
+    }
+
+
+    public function testSaveUpdate(){
+        $obj = new Group();
+        $title = "たいとる";
+        $memo = "めもめも";
+
+        $m = $obj->create(array(
+                "title" => $title,
+                "memo" => $memo
+            )
+        );
+        $ret = $m->save();
+        $this->assertTrue($ret);
+
+        $ret = $obj->find(array(
+                "cond" => array("title = ? AND memo = ?", $title, $memo)
+            )
+        );
+        $this->assertEquals(1, count($ret));
+        $this->assertEquals($title, $ret[0]->title);
+        $this->assertEquals($memo,  $ret[0]->memo);
+
+        $m = $ret[0];
+        $new_title = "new title";
+        $new_memo  = "new memo";
+
+        $m->title = $new_title;
+        $m->memo = $new_memo;
+
+        $ret = $m->update();
+        $this->assertEquals(1, $ret);
+
+        $ret = $obj->find(array(
+                "cond" => array(
+                    "title = ? AND memo = ?", 
+                    $new_title, $new_memo
+                )
+            )
+        );
+        $this->assertEquals(1, count($ret));
+        $this->assertEquals($new_title, $ret[0]->title);
+        $this->assertEquals($new_memo , $ret[0]->memo);
+    }
+
+    public function testDestroy(){
+        $obj = new Group();
+
+        $ret = $obj->find();
+        $this->assertEquals(10, count($ret));
+
+        $ret = $obj->destroy(array(
+                "cond" => array("title = 'title2'")
+            )
+        );
+        $this->assertEquals(1, $ret);
+
+        $ret = $obj->find(array(
+                "cond" => array("title = 'title2'")
+            )
+        );
+        $this->assertEquals(0, count($ret));
+    }
+
+    public function testDestroy_with_param(){
+        $obj = new Group();
+
+        $ret = $obj->find();
+        $this->assertEquals(10, count($ret));
+
+        $title = "title2";
+        $ret = $obj->destroy(array(
+                "cond" => array("title = ?", $title)
+            )
+        );
+        $this->assertEquals(1, $ret);
+
+        $ret = $obj->find(array(
+                "cond" => array("title = ?", $title)
+            )
+        );
+        $this->assertEquals(0, count($ret));
+    }
+
+    public function testDestroy_with_pkey(){
+        $obj = new Group();
+
+        $ret = $obj->find();
+        $this->assertEquals(10, count($ret));
+
+        $target = $ret[5];
+        $ret = $target->destroy();
+        $this->assertEquals(1, $ret);
+
+        $ret = $obj->find(array(
+                "cond" => array("title = ?", $target->title)
+            )
+        );
+        $this->assertEquals(0, count($ret));
+    }
+
+    public function testDestroy_with_pkey2(){
+        $obj = new Group();
+
+        $ret = $obj->find();
+        $this->assertEquals(10, count($ret));
+
+        $target = $ret[5];
+        $obj2 = $obj->create(array(
+                "id" => $target->id
+            )
+        );
+        $ret = $obj2->destroy();
+        $this->assertEquals(1, $ret);
+
+        $ret = $obj->find(array(
+                "cond" => array("title = ?", $target->title)
+            )
+        );
+        $this->assertEquals(0, count($ret));
+    }
+
 
     protected function tearDown(){
         $grp = new Group(); 
