@@ -166,6 +166,7 @@ class ChainRecord {
      * )
      */
     public function find($ary = null){
+        // TODO cond param permit array and one string(without param case)
         $params = array();
 
         $query = "SELECT * FROM ".$this->table_name." ";
