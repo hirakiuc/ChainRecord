@@ -13,6 +13,15 @@ class ChainTubeTest extends PHPUnit_Framework_TestCase{
             $this->assertTrue(is_numeric($v));
         }
     }
+
+    public function testBrace(){
+        $list = array(1,2,3,4,5,6);
+        $tube = new ChainTube($list);
+
+        for($i=0;$i<count($list);$i++){
+            $this->assertEquals($i+1, $tube[$i]); 
+        } 
+    } 
 }
 
 ?>
