@@ -70,21 +70,30 @@ class ChainTube implements ArrayAccess, Iterator, Countable {
             }
         }
         $this->list = $ary;
+        return $this;
     }
 
     public function apply($ary){
+        if(!isset($ary['params'])){
+            $ary['params'] = array();
+        }
+
         foreach($this->list as $v){
+            $args = array($v);
+            array_push($args, $ary['params']);
+
             call_user_func_array(
-                array($ary['obj'], $ary['method']), 
-                $ary['params']
+                array($ary['obj'], $ary['method']), $args
             );
         }
+        return $this;
     }
 
     public function each($callback){
         foreach($this->list as $v){
-            $calllback($v);
+            $callback($v);
         }
+        return $this;
     }
 
     public function first(){
@@ -129,7 +138,11 @@ class ChainTube implements ArrayAccess, Iterator, Countable {
         }else if(is_array($v)){
             $obj = new ArrayInvoker($this->list);
         }else if(is_object($v)){
-            $obj = new ObjectInvoker($this->list);
+            if(is_subclass_of($v, "ChainRecord")){
+                $obj = new ChainRecordInvoker($this->list);
+            }else{ 
+                $obj = new ObjectInvoker($this->list);
+            }
         }
 
         if(is_null($obj)){
