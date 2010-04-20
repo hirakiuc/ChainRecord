@@ -40,7 +40,6 @@ class Config{
         }
         return Config::$instance;
     } 
-}
-
+} 
 
 ?>
