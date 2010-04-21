@@ -28,10 +28,11 @@ class ChainRecordInvoker extends MethodInvoker {
             } 
 
             array_push($result, $grp_result);
-//            if(isset($parameters[0]["order"])){
-//                $this->sort_by_keys($result, $keys, $order);
-//            }
         } 
+
+        if($name === "find" && isset($parameters[0]["order"])){
+            $result = $this->sort_by_keys($result, $parameters[0]["order"]);
+        }
 
         return $result;
     }
@@ -41,9 +42,11 @@ class ChainRecordInvoker extends MethodInvoker {
         return array($this->list);
     }
 
-    private function sort_by_keys($list, $keys, $order){
-        // TODO sort list by keys with order
-        return $list;
+    private function sort_by_keys($list, $orderby){
+        $sorter = new ObjectSorter($parameters[0]["order"]);
+        $sorted_list = $sorter->sort($list);
+
+        return $sorted_list;
     }
 } 
 
