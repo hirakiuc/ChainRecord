@@ -129,19 +129,9 @@ class ChainTube implements ArrayAccess, Iterator, Countable {
         $obj = null;
         if(is_integer($v)){
             $obj = new IntegerInvoker($this->list);
-        }else if(is_float($v)){
-            $obj = new FloatInvoker($this->list);
-        }else if(is_string($v)){
-            $obj = new StringInvoker($this->list);
-        }else if(is_bool($v)){
-            $obj = new BooleanInvoker($this->list);
-        }else if(is_array($v)){
-            $obj = new ArrayInvoker($this->list);
         }else if(is_object($v)){
             if(is_subclass_of($v, "ChainRecord")){
                 $obj = new ChainRecordInvoker($this->list);
-            }else{ 
-                $obj = new ObjectInvoker($this->list);
             }
         }
 
