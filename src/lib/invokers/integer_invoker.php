@@ -2,6 +2,14 @@
 
 class IntegerInvoker extends MethodInvoker {
 
+    public function sum(){
+        $sum = 0;
+        foreach($this->list as $v){
+            $sum+= $v;
+        }
+        return $sum;
+    }
+
     publc function max(){
         $max = null;
         foreach($this->list as $v){
@@ -42,20 +50,7 @@ class IntegerInvoker extends MethodInvoker {
         }
 
         return $sum/count($this->list);
-    }
-
-    public function sort($order){
-        // TODO implement
-    }
-
-    public function to_s(){
-        $ary = array();
-        foreach($this->list as $v){
-            array_push($ary, strval($v));
-        }
-        return $this->list;
-    }
-}
-
+    } 
+} 
 
 ?>
