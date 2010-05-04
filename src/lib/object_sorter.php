@@ -11,7 +11,7 @@ class ObjectSorter{
     private $order = null;
 
     public function __construct($sort_str){ 
-        $this->list = array();
+        $this->order = "asc";
         $this->sort_keys = array();
 
         $ret = explode(",", $sort_str);
@@ -25,10 +25,6 @@ class ObjectSorter{
             }else{
                 throw new CRError("invalid parameter error");
             }
-        }
-
-        if(is_null($this->order)){
-            $this->order = "asc";
         } 
     } 
 
