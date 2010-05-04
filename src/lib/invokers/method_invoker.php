@@ -1,6 +1,6 @@
 <?php
 
-require_once "errors.php";
+require_once "lib/errors.php";
 
 class MethodInvoker{
 

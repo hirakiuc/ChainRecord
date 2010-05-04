@@ -1,5 +1,7 @@
 <?php
 
+require_once "lib/invokers/method_invoker.php";
+
 class IntegerInvoker extends MethodInvoker {
 
     public function sum(){
@@ -10,7 +12,7 @@ class IntegerInvoker extends MethodInvoker {
         return $sum;
     }
 
-    publc function max(){
+    public function max(){
         $max = null;
         foreach($this->list as $v){
             if(is_null($max)){
