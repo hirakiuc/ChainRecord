@@ -41,7 +41,9 @@ class PdoPool{
     public function getPdoInfo($key = "default"){
 
         if(is_null($this->pool[$key])){ 
-            $key = $this->config["default"]; 
+            if($key === "default"){
+                $key = $this->config["default"];
+            } 
             $config = $this->config[$key];
 
             $this->createPdo($key, $config);
