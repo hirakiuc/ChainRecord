@@ -1,6 +1,9 @@
 <?php
 
-require_once "errors.php";
+require_once "lib/errors.php";
+require_once "lib/invokers/method_invoker.php";
+require_once "lib/invokers/chain_record_invoker.php";
+require_once "lib/invokers/integer_invoker.php";
 
 
 class ChainTube implements ArrayAccess, Iterator, Countable {
