@@ -67,9 +67,9 @@ class ChainRecord {
     /**
      *
      */
-    public function __construct(){
+    public function __construct($dbkey = "default"){
         $obj = PdoPool::getInstance();
-        $pdo_info = $obj->getPdoInfo();
+        $pdo_info = $obj->getPdoInfo($dbkey);
 
         $this->db_key     = $pdo_info["key"];
         $this->pdo        = $pdo_info["pdo"];
@@ -119,9 +119,27 @@ class ChainRecord {
     /**
      *
      */
-    public function save(){ 
+    public function save($ary = array()){ 
         $params = array();
 
+        if(isset($ary["dbs"])){
+            $props = array();
+            foreach($this->column_names as $name){
+                $props[$name] = $this->vals[$name]["value"];
+            }
+
+            $models = array();
+            $name = get_class($this);
+            foreach($ary["dbs"] as $dbkey){
+                $obj = new $name($dbkey);
+                $m = $obj->create($props);
+                array_push($models, $m);
+            }
+
+            $tube = new ChainTube($models);
+            unset($ary["dbs"]); 
+            return $tube->save($ary);
+        }
 
         $columns = array();
         $marker = array();
@@ -163,11 +181,35 @@ class ChainRecord {
      *  "cond" => array("condition", array(params1,..)),
      *  "order" => order_by_string
      *  "limit" => number or array(limit, offset),
+     *  "dbs"   => array("dbkey1", "dbkey2",...)
      * )
      */
     public function find($ary = null){
-        // TODO cond param permit array and one string(without param case)
+
         $params = array();
+
+        if(isset($ary["dbs"])){
+            
+            if($this->is_pkey_set()){
+                $v = $this->get_pkey_cond();
+
+                $ary["cond"][0].= $v["cond"];
+                $ary["cond"] = array_merge($ary["cond"], $v["params"]); 
+            } 
+
+            $models = array();
+            $name = get_class($this);
+            foreach($ary["dbs"] as $dbkey){
+                $obj = new $name($dbkey);
+                array_push($models, $obj);
+            }
+
+            $tube = new ChainTube($models);
+            unset($ary["dbs"]);
+            return $tube->find($ary);
+        }
+
+
 
         $query = "SELECT * FROM ".$this->table_name." ";
 
@@ -246,6 +288,7 @@ class ChainRecord {
      *      ...
      *  ), 
      *  "cond" => array("condition", array())
+     *  "dbs"  => array("dbkey1", "dbkey2",...)
      * )
      */
     public function update($ary = null){
@@ -269,6 +312,26 @@ class ChainRecord {
             if($v["is_updated"]){
                 $updated_props[$key] = $v["value"];
             }
+        }
+
+        if(isset($ary["dbs"])){
+            if($this->is_pkey_set()){
+                $v = $this->get_pkey_cond();
+
+                $ary["cond"][0].= $v["cond"];
+                $ary["cond"] = array_merge($ary["cond"], $v["params"]); 
+            }
+
+            $models = array();
+            $name = get_class($this);
+            foreach($ary["dbs"] as $dbkey){
+                $obj = new $name($dbkey);
+                array_push($models, $obj);
+            }
+
+            $tube = new ChainTube($models); 
+            unset($ary["dbs"]);
+            return $tube->update($updated_props);
         }
 
         $query = "UPDATE ".$this->table_name." SET ";
@@ -327,10 +390,31 @@ class ChainRecord {
     /**
      * $ary(
      *  "cond" => array("condition", array()),
+     *  "dbs"  => array("dbkey1", "dbkey2",...)
      * )
      */
     public function destroy($ary = null){
         $params = array();
+
+        if(isset($ary["dbs"])){
+            if($this->is_pkey_set()){
+                $v = $this->get_pkey_cond();
+
+                $ary["cond"][0].= $v["cond"];
+                $ary["cond"] = array_merge($ary["cond"], $v["params"]);
+            }
+
+            $models = array();
+            $name = get_class($this);
+            foreach($ary["dbs"] as $dbkey){
+                $obj = new $name($dbkey);
+                array_push($models, $obj);
+            }
+
+            $tube = new ChainTube($models); 
+            unset($ary["dbs"]);
+            return $tube->destroy($ary); 
+        }
 
         $query = "DELETE FROM ". $this->table_name." ";
 
