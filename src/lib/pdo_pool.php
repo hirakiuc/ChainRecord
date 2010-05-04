@@ -1,6 +1,6 @@
 <?php
-require_once "errors.php";
-require_once "config.php";
+require_once "lib/errors.php";
+require_once "lib/config.php";
 
 class PdoPool{
 
@@ -38,16 +38,12 @@ class PdoPool{
     /**
      *
      */
-    public function getPdoInfo($key = null){
+    public function getPdoInfo($key = "default"){
 
-        if(is_null($key)){
-            $obj = Config::getInstance();
-            $config = $obj->config;
+        if(is_null($this->pool[$key])){ 
+            $key = $this->config["default"]; 
+            $config = $this->config[$key];
 
-            if(is_null($key)){
-                // set default databas key.
-                $key = $config['databases']['default']; 
-            }
             $this->createPdo($key, $config);
         }
 
@@ -62,36 +58,34 @@ class PdoPool{
 
     private function createPdo($key, $config){
 
-        $db_config = $config['databases'][$key]; 
-
-        if(is_null($db_config)){
-            throw InvalidConfigError(
+        if(is_null($config)){
+            throw new InvalidConfigError(
                 "target database is not configured:". $key);
         }
 
         $pdo = null;
-        if($db_config['adapter'] === "mysql"){
-            $pdo = $this->getMySQLPdo($db_config);
-        }else if ($db_config['adapter'] === "postgresql"){
-            $pdo = $this->getPostgreSQLPdo($db_config);
+        if($config['adapter'] === "mysql"){
+            $pdo = $this->getMySQLPdo($config);
+        }else if ($config['adapter'] === "postgresql"){
+            $pdo = $this->getPostgreSQLPdo($config);
         }else{
             throw new NotSupporDbError(
                 "target adapter is not supported:"
-                .$db_config['adapter']);
+                .$config['adapter']);
         }
 
         if(is_null($pdo)){
             throw new DBError(
                 "Connection failed:("
-                .$db_config["adapter"] . "-"
-                .$db_config["host"]. ":". $db_config["port"]
+                .$config["adapter"] . "-"
+                .$config["host"]. ":". $config["port"]
                 .")"
             );
         }
 
         $this->pool[$key] = array(
             "pdo"    => $pdo, 
-            "config" => $db_config
+            "config" => $config
         ); 
     }
 
