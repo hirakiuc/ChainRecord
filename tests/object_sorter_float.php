@@ -4,7 +4,7 @@ require_once "PHPUnit/Framework.php";
 require_once "test_helper.php";
 require_once "../src/lib/object_sorter.php";
 
-class Sample{
+class SampleFloat{
     public $prop1 = null;
     public $prop2 = null;
     public $prop3 = null;
@@ -29,7 +29,7 @@ class ObjectSorterFloatTest extends PHPUnit_Framework_TestCase {
 
         for($i=0;$i<1000;$i++){
             array_push($this->list, 
-                new Sample(rand(1000,10000)/100000, rand(100,1000)/100000)
+                new SampleFloat(rand(1000,10000)/100000, rand(100,1000)/100000)
             );
         }
     }

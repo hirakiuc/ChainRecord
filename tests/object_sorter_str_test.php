@@ -4,7 +4,7 @@ require_once "PHPUnit/Framework.php";
 require_once "test_helper.php";
 require_once "../src/lib/object_sorter.php";
 
-class Sample{
+class SampleStr{
     public $prop1 = null;
     public $prop2 = null;
     public $prop3 = null;
@@ -29,7 +29,7 @@ class ObjectSorterStrTest extends PHPUnit_Framework_TestCase {
 
         for($i=0;$i<100;$i++){
             array_push($this->list, 
-                new Sample(":".rand(0,1000).":", ":".rand(0,100).":")
+                new SampleStr(":".rand(0,1000).":", ":".rand(0,100).":")
             );
         }
     }
